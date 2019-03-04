@@ -1,13 +1,14 @@
 # GranolaPods
-Frontend Website, Backend Server, Unity Module Hardware and Firmware
+This repo contains the the frontend website code, the backend server code, as well as the hardware (PCB) and firmware of the GranolaPods modular Unity system.
 
 ## About
-The Unity Module is an I2C-based modular control board for the GranolaPods smart trail-mix making machine.
-This was developed for University of Waterloo Mechatronics FYDP team #26.
 
-Why the name "Unity"? The board and code is designed to be modular - all devices in the GranolaPods system (e.g. the Gantry Cart, the Dispensers, and any future devices such as mixers or binders) use the same PCB and the same code.
+GranolaPods is an automated trail mix making machine that creates a custom snack based on your personalized macronutrient requirements. Coding and algorithms take your health requirements into account and select ingredients to suit your needs. The end product is a GranolaPod (granola treat with a personality!) served in a convenient and resealable package, perfect for health conscious, on-the-go individuals.
 
-This repo contains the PCB and code for the Unity modules, as well as major updates to the frontend web interface and the backend server.
+The Unity Module is an I2C-based modular control board for the GranolaPods smart trail-mix making machine. Why the name "Unity"? The board and code is designed to be modular - all devices in the GranolaPods system (e.g. the Gantry Cart, the Dispensers, and any future devices such as mixers or binders) use the same PCB and the same code.
+
+
+This was developed for University of Waterloo Mechatronics FYDP Team #26.
 
 ## How it works
 
