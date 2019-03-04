@@ -1,0 +1,25 @@
+body {
+	color: black;
+	background-image: url("./bg_light.jpg");
+	
+	
+
+}
+
+#main_window, #back_window {
+	background-color: rgba(255,255,255,0.8);
+	border:solid #20aa71 3px;
+}
+
+.window_header {
+	background-color: rgba(255, 255, 255,0.8);
+}
+
+.control {
+	border: solid black 2px;
+	background-color: rgba(255,255,255,0.8);	
+}
+
+.window_footer {
+	background-color: rgba(255, 255, 255,0.8);
+}

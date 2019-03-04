@@ -1,0 +1,41 @@
+#background_container {
+	perspective: 1000px;
+	-moz-perspective: 1000px;
+	-webkit-perspective: 1000px;
+}
+
+	.flipped #flipper {
+		transform: rotateY(180deg);
+		-moz-transform: rotateY(180deg);
+		-webkit-transform: rotateY(180deg);
+		will-change: transform;
+	}
+
+#flipper {
+	transition: 1s;
+	-moz-transition: 1s;
+	-webkit-transition: 1s;	
+	transform-style: preserve-3d;
+	-moz-transform-style: preserve-3d;
+	-webkit-transform-style: preserve-3d;
+	will-change: transform;
+
+}
+
+#main_window, #back_window {
+	backface-visibility: hidden;
+	-moz-backface-visibility: hidden;
+	-webkit-backface-visibility: hidden;
+}
+
+#main_window {
+	position: absolute;
+	z-index: 2;
+	transform: rotateY(0deg);
+}
+
+#back_window {
+	position: absolute;
+	transform: rotateY(180deg);
+	height:423px;
+}

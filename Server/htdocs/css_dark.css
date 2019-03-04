@@ -1,0 +1,22 @@
+body {
+	color: white;
+	background-image: url("./bg_dark.png");
+}
+
+#main_window, #back_window {
+	background-color: rgba(0,0,0,0.5);
+	border:solid black 3px;
+}
+
+.window_header {
+	background-color: rgba(0,0,0,0.3);
+}
+
+.control {
+	border: solid black 2px;
+	background-color: rgba(255,255,255,0.1);
+}
+
+.window_footer {
+	background-color: rgba(0,0,0,0.3);
+}

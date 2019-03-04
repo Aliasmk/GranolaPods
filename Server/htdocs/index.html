@@ -1,0 +1,211 @@
+<html>
+<head>
+	<title>GranolaPods UI</title>
+	
+	<meta 
+     name='viewport' 
+     content='width=device-width, initial-scale=0.8, maximum-scale=0.8, user-scalable=0' 
+	/>
+	
+	
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+	<link href="/static/css_animation.css" rel="stylesheet" type="text/css">
+	<link href="/static/css_general.css" rel="stylesheet" type="text/css">
+	<link href="/static/spinner.css" rel="stylesheet" type="text/css">
+
+	<link id="styles" href="" rel="stylesheet" type="text/css">
+	
+	<script>
+		var proteinVal = 0;
+		var fatVal = 0;
+		var carbVal = 0;
+		var style = 2; //1: dark, 2: light
+		
+		function nextStyle() {
+			if(style == 1){ 
+				style = 2;
+			} else if(style == 2) {
+				style = 1;
+			}
+			var d = new Date;
+			d.setTime(d.getTime() + 24*60*60*1000*30);
+			document.cookie = "style=" + style + ";path=/;expires=" + d.toGMTString();
+			checkPercent();
+		}
+		
+		function pUp(){
+			if(proteinVal <= 80){
+				proteinVal+=20;
+			}
+			document.getElementById("pval").innerHTML = proteinVal + '%';
+			checkPercent();
+		}
+		
+		function pDown(){
+			if(proteinVal >=20){
+				proteinVal-=20;
+			}
+			document.getElementById("pval").innerHTML = proteinVal + '%';
+			checkPercent();
+		}
+		
+		function fUp(){
+			if(fatVal <= 80){
+				fatVal+=20;
+			}
+			document.getElementById("fval").innerHTML = fatVal + '%';
+			checkPercent();
+		}
+		
+		function fDown(){
+			if(fatVal >= 20){
+				fatVal-=20;
+			}
+			document.getElementById("fval").innerHTML = fatVal + '%';
+			checkPercent();
+		}
+		
+		function cUp(){
+			if(carbVal <= 80){
+				carbVal+=20;
+			}
+			document.getElementById("cval").innerHTML = carbVal + '%';
+			checkPercent();
+		}
+		
+		function cDown(){
+			if(carbVal >= 20){
+				carbVal-=20;
+			}
+			document.getElementById("cval").innerHTML = carbVal + '%';
+			checkPercent();
+		}
+		
+		function clamp(min,mid,max){
+			return mid < min ? min : mid < max ? mid : max;
+		}
+		
+		function checkPercent(){
+			var delta = 100 - proteinVal - fatVal - carbVal;
+			var buttoncolor;
+			
+			var v = document.cookie.match('(^|;) ?' + 'style' + '=([^;]*)(;|$)');
+			style = v[2];
+			
+			if(style == 1){
+				document.getElementById("styles").setAttribute("href", "/static/css_dark.css"); 
+				buttoncolor = "#333333";			
+			} else if(style == 2) {
+				document.getElementById("styles").setAttribute("href", "/static/css_light.css"); 
+				buttoncolor = "#eeeeee";
+			}
+			
+			
+			document.getElementById("go_button").style.backgroundColor = buttoncolor;
+			if (delta == 100){
+				document.getElementById("goButton").innerHTML = "Tap the buttons to add ingredients!";
+			}else if(delta > 0){
+				document.getElementById("goButton").innerHTML = delta + "% to go!";
+			}else if (delta < 0){
+				document.getElementById("goButton").innerHTML = -delta + "% too much!";
+			}else{
+				document.getElementById("goButton").innerHTML = "Make my GranolaPod!";
+				document.getElementById("go_button").style.backgroundColor = "#20aa71";
+			}
+		}
+		
+		function makePod(){
+			delta = 100 - proteinVal - fatVal - carbVal;
+			if(delta == 0){
+				var goform = document.forms['run'];
+				goform.elements["pval"].value = proteinVal;
+				goform.elements["fval"].value = fatVal;
+				goform.elements["cval"].value = carbVal;
+
+				document.getElementById('background_container').className += "flipped";
+				
+				
+				goform.submit();
+			}
+		}
+	</script>	
+</head>
+
+<body onload="checkPercent()">
+	<div id="background_container">
+		<div id="flipper">
+			<div id="main_window">
+				<div class="window_header">	
+					<h1>Welcome to GranolaPods!</h1>
+					<p>To begin, tap the buttons below to choose your selection. <span id="swap" style="color:blue" onclick="nextStyle()">Click Here</span> to change styles.</p>
+				</div>
+				<div id="window_controls">
+					<div class="protein control">
+						<h1>Protein</h1>
+						<div class="button" onclick="pUp()">
+							<h3>+</h3>
+						</div>
+						<div class="middle_info">
+							<h2 id="pval">0%</h2>
+						</div>
+						<div class="button" onclick="pDown()">
+							<h3>-</h3>
+						</div>
+					</div>
+					
+					<div class="fat control">
+						<h1>Fat</h1>
+						<div class="button" onclick="fUp()">
+							<h3>+</h3>
+						</div>
+						<div class="middle_info">
+							<h2 id="fval">0%</h2>
+						</div>
+						<div class="button" onclick="fDown()">
+							<h3>-</h3>
+						</div>
+					</div>
+					
+					<div class="carbs control">
+						<h1>Carbs</h1>
+						<div class="button" onclick="cUp()">
+							<h3>+</h3>
+						</div>
+						<div class="middle_info">
+							<h2 id="cval">0%</h2>
+						</div>
+						<div class="button" onclick="cDown()">
+							<h3>-</h3>
+						</div>
+					</div>
+				</div>
+				<div class="window_footer">
+					<form id='run' method="post">
+						<div id="go_button" onclick="makePod()">
+							<h1 id="goButton" >Make my GranolaPod!</h1>
+							<input type="hidden" name="pval" value="" size ="40" />
+							<input type="hidden" name="fval" value="" size ="40" />
+							<input type="hidden" name="cval" value="" size ="40" />
+						</div>
+					</form>
+				</div>
+			</div>
+			<div id="back_window">
+				<div class="window_header">
+					<h1>Your GranolaPod is on the way!</h1>
+					<p>Please wait, it will be served momentarily.</p>
+				</div>
+				
+				<div id="loading_icon">
+					<div class="lds-css ng-scope">
+						<div class="lds-spinner" style="100%;height:100%">
+							<div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>
