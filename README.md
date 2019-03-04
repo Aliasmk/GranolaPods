@@ -1,4 +1,4 @@
-# GranolaPods :: Unity Module
+# GranolaPods :: Frontend Website, Backend Server, Unity Module Hardware and Firmware
 
 The Unity Module is an I2C-based modular control board for the GranolaPods smart trail-mix making machine.
 This was developed for University of Waterloo Mechatronics FYDP team #26.
@@ -10,7 +10,8 @@ The front end and server are both run locally on a Raspberry Pi. In the GranolaP
 
 The Unity modules are powered by an ATmega328P. Programming is done through the Arduino IDE via ICSP pins.
 
-To see how the GranolaPods system was envisioned to work check out [this video](https://www.youtube.com/watch?v=Usi5u81KuWI).
+To see how the GranolaPods system was envisioned to work check out [this video](https://www.youtube.com/watch?v=Usi5u81KuWI). Unfortunatly due to time constraints we had to reduce the scope and remove the mixing and binding steps and make trail mix rather than granola bars.
+
 For a demonstration of the Unity system you can check out [this video](https://www.youtube.com/watch?v=NxC_GapGs20).
 
 To run the server, simply run ```python ./server/server.py```, then navigate to ```localhost```.
