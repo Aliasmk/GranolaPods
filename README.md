@@ -1,4 +1,4 @@
-# GranolaPods :: Front/Backend, Hardware, Firmware
+# GranolaPods
 This repo contains the the frontend website code, the backend server code, as well as the hardware (PCB) and firmware of the GranolaPods modular Unity system.
 
 ## About
