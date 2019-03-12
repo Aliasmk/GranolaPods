@@ -1,6 +1,7 @@
 //Button Interrupt
 void hitLimitSwitch(){
   stepperDisable();
+  switchTriggered = true;
   setState(STATE_SWITCHTRIGGER);
 }
 

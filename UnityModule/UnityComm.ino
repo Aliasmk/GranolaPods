@@ -42,9 +42,9 @@ void getSerialMessage(int numBytes){
       setState(STATE_HALLPOLLING);
     break;
     case 0x20:    //Dispense Cup
-      setState(STATE_MOVING);
-      dispenseCup();
-      setState(STATE_STOPPED);
+      //setState(STATE_MOVING);
+      cupDispenseReady = true;
+      //setState(STATE_STOPPED);
     break;
   }
 }
@@ -53,22 +53,29 @@ void getSerialMessage(int numBytes){
 void sendSerialMessage(){
   byte reply[32];
 
+  for(int i = 0; i<32; i++){
+    reply[i] = 0;
+  }
   reply[0] = command[1];
   reply[1] = 0;
   
   if(command[1] == 0xAA){   //Request for Info
     switch(command[2]){
       case 0x5:     //Gantry Calibration
-        if(state == STATE_SWITCHTRIGGER)
-        reply[1] = 1;
+        if(state == STATE_SWITCHTRIGGER){
+          reply[1] = 1;
+          switchTriggered = false;
+        } 
       break;
       case 0x11:    //Request Hall
         if(state == STATE_HALLTRIGGER)
           reply[1] = 1;
+          hallSensorTriggered = false;
       break;  
     }
   }
 
-  Wire.write(reply[0]);
-  Wire.write(reply[1]);
+  for(int i = 0; i<32; i++){
+    Wire.write(reply[i]);
+  }
 }

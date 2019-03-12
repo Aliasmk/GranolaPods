@@ -26,20 +26,20 @@ int state = 0;                  //States are general machine states
 #define STEPPER_DIR 10
 #define STEPPER_STEP 16
 #define STEPPER_SLEEP 17
-#define CW HIGH
-#define CCW LOW
+#define CW LOW
+#define CCW HIGH
 #define STEP_PER_REV 200
 
-bool stepperStatus = false;
-long int lastStepAt;
-int currentSpeed = 0;
-int targetSpeed = 0;
-bool currentDir = CW;
-bool targetDir = CW;
+volatile bool stepperStatus = false;
+volatile long int lastStepAt;
+volatile int currentSpeed = 0;
+volatile int targetSpeed = 0;
 
 byte command[32];               //All I2C commands recieved from the Pi are [0, command, arg1, arg2, arg3]. Idk why the leading zero.
 
-bool hallSensorTriggered = false;
+volatile bool hallSensorTriggered = false;
+volatile bool switchTriggered = false;
+volatile bool cupDispenseReady = false;
 
 void setup() {
   //Pin Setup
@@ -47,6 +47,8 @@ void setup() {
   pinMode(STATUS_R, OUTPUT);
   pinMode(LIMIT_SWITCH, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(LIMIT_SWITCH), hitLimitSwitch, FALLING);
+
+  delay(100);
   
   //Timer Setup for ~200uS
   TCCR2B = (TCCR2B & B11111000) | 0x02; //Timer2 - 8 divisor
@@ -71,4 +73,9 @@ void loop() {
   #ifdef HALL_SENSOR
     readHallSensor();
   #endif
+
+  if(cupDispenseReady){
+    dispenseCup();
+    cupDispenseReady = false;
+  }
 }

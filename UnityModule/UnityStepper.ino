@@ -3,6 +3,16 @@ void setupStepper(){
   pinMode(STEPPER_DIR, OUTPUT);
   pinMode(STEPPER_STEP, OUTPUT);
   pinMode(STEPPER_SLEEP, OUTPUT);
+
+  stepperStart(60);
+  delay(200);
+  stepperStop();
+  delay(100);
+  stepperStart(-60);
+  delay(200);
+  stepperStop();
+  delay(100);
+
   stepperDisable();
 }
 
@@ -24,41 +34,39 @@ long int RPMtoStepDelay(double RPM){
 void stepperStart(int stepperRPM){
   stepperEnable();
   targetSpeed = stepperRPM;
+ // currentSpeed = stepperRPM;
 }
 
 //Decel stepper to stop
 void stepperStop(){
-  targetSpeed = 0;  
+  targetSpeed = 0;
+  //currentSpeed = 0;  
 }
 
 //Perform one step of the stepper. Also accel or decel to target speed.
-void stepperStep(){
-  //Update the previous step time
-  lastStepAt = micros();
-
+void stepperStep(){  
+  lastStepAt = micros();   //Update the previous step time
+  /*
   //Accel and Decel to target
   if(currentSpeed < targetSpeed)
     currentSpeed++;
   else if(currentSpeed > targetSpeed)
     currentSpeed--;
+*/
 
-  //set direction
-  if(currentSpeed < 0 && currentDir == CCW ){
+ double Kp = 0.2;
+ currentSpeed = round(currentSpeed + Kp*(targetSpeed-currentSpeed));
+ 
+ if(currentSpeed < 0)
     digitalWrite(STEPPER_DIR,CW);
-    currentDir = CW;
-  } else if(currentSpeed > 0 && currentDir == CW){
+  else if(currentSpeed > 0)
     digitalWrite(STEPPER_DIR,CCW);
-    currentDir = CCW;
-  }
 
-  //Make step
-  digitalWrite(STEPPER_STEP,HIGH); 
-  //delayMicroseconds(10);
+  digitalWrite(STEPPER_STEP,HIGH);    //Make step
   digitalWrite(STEPPER_STEP,LOW);
 
-  //Disable if stopped
   if(targetSpeed == 0 && abs(currentSpeed) < 10)
-    stepperDisable();
+    stepperDisable();   //Disable if stopped
 }
 
 //Wake up the stepper motor driver
