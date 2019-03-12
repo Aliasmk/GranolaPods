@@ -16,12 +16,14 @@ void setupI2C(){
   }
 }
 
-//Callback function for when the device detects i2c data
-void getSerialMessage(int numBytes){
-  int i = 0;
-  while(Wire.available()){
-    command[i++] = (byte)Wire.read(); //must be casted or else it throws mad problems.
+void processI2C(){
+  Serial.print("RX: [");
+  Serial.print(command[0]);
+  for(int i = 1; i<5; i++){
+    Serial.print(", ");
+    Serial.print(command[i]);
   }
+  Serial.println("]");
 
   switch (command[1]){
     case 0x1:     //Free move stepper
@@ -42,40 +44,63 @@ void getSerialMessage(int numBytes){
       setState(STATE_HALLPOLLING);
     break;
     case 0x20:    //Dispense Cup
-      //setState(STATE_MOVING);
       cupDispenseReady = true;
-      //setState(STATE_STOPPED);
     break;
   }
 }
 
+void sendI2CReply(){
+ 
+
+  Serial.print("TX: [");
+  Serial.print((byte)reply[0]);
+  for(int i = 1; i<4; i++){
+    Serial.print(", ");
+    Serial.print((byte)reply[i]);
+  }
+  Serial.println("]");
+  
+}
+
+//Callback function for when the device detects i2c data
+void getSerialMessage(int numBytes){
+  int i = 0;
+  while(Wire.available()){
+    command[i] = (byte)Wire.read(); //must be casted or else it throws mad problems.
+    i++;
+  }
+  i2c_data_ready = true;
+}
+
 //Callback function when i2c data is requested
 void sendSerialMessage(){
-  byte reply[32];
+  int result = 0;
 
-  for(int i = 0; i<32; i++){
-    reply[i] = 0;
-  }
-  reply[0] = command[1];
-  reply[1] = 0;
-  
   if(command[1] == 0xAA){   //Request for Info
     switch(command[2]){
       case 0x5:     //Gantry Calibration
-        if(state == STATE_SWITCHTRIGGER){
-          reply[1] = 1;
+        if(switchTriggered){
+          result = 1;
           switchTriggered = false;
         } 
       break;
       case 0x11:    //Request Hall
-        if(state == STATE_HALLTRIGGER)
-          reply[1] = 1;
+        if(hallSensorTriggered){
+          result = 1;
           hallSensorTriggered = false;
+        }
       break;  
     }
   }
-
-  for(int i = 0; i<32; i++){
-    Wire.write(reply[i]);
+  
+  //reply[0] = 0x0;
+  //reply[1] = 0x7;
+  reply[0] = command[1];
+  reply[1] = result;  //Wow, setting the first byte to zeroand or making the second byte not 0x7 makes it disappear from the bus
+  
+  for(int i = 0; i < 2; i++){
+    Wire.write((byte)reply[i]);
   }
+
+  i2c_data_request = true;
 }

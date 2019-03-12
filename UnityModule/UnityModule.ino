@@ -6,9 +6,9 @@ Servo cupdisp;
 
 #define I2C_ADDRESS 0x4
 #define MICROSTEPS 1
-//#define HALL_SENSOR A0
+#define HALL_SENSOR A0
 
-int state = 0;                  //States are general machine states
+volatile int state = 0;                  //States are general machine states
 #define STATE_STOPPED 0
 #define STATE_MOVING 1
 #define STATE_SWITCHPOLLING 2
@@ -35,47 +35,79 @@ volatile long int lastStepAt;
 volatile int currentSpeed = 0;
 volatile int targetSpeed = 0;
 
-byte command[32];               //All I2C commands recieved from the Pi are [0, command, arg1, arg2, arg3]. Idk why the leading zero.
+volatile int i2c_data_ready = false;
+volatile int i2c_data_request = false;
+volatile byte command[5];               //All I2C commands recieved from the Pi are [registerpointer, command, arg1, arg2, arg3].
+volatile byte reply[4];
 
 volatile bool hallSensorTriggered = false;
 volatile bool switchTriggered = false;
 volatile bool cupDispenseReady = false;
 
 void setup() {
+  Serial.begin(9600);
+  Serial.println("Beginning Startup...");
+  
   //Pin Setup
   pinMode(STATUS_G, OUTPUT);
   pinMode(STATUS_R, OUTPUT);
   pinMode(LIMIT_SWITCH, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(LIMIT_SWITCH), hitLimitSwitch, FALLING);
-
-  delay(100);
+  Serial.println("Pins Initialized"); 
   
   //Timer Setup for ~200uS
-  TCCR2B = (TCCR2B & B11111000) | 0x02; //Timer2 - 8 divisor
-  TIMSK2 = (TIMSK2 & B11111110) | 0x01; //Enable Timer2 interrupt
-
-  setupStepper();
-  setupServo();
-  setupI2C();
+  //TCCR2B = (TCCR2B & B11111000) | 0x02; //Timer2 - 8 divisor
+  //TIMSK2 = (TIMSK2 & B11111110) | 0x01; //Enable Timer2 interrupt
+  Serial.println("Timer Initialized");
   
+  setupStepper();
+  Serial.println("Stepper Initialized");
+  setupServo();
+  Serial.println("Servo Initialized");
+  setupI2C();
+  Serial.println("I2C Initialized");
+
+  Serial.println("Setup complete");
   setState(STATE_STOPPED);
 }
 
 
 //Timer2 Interrupt (128us)
-ISR(TIMER2_OVF_vect){
+/*ISR(TIMER2_OVF_vect){
   processMovement();
-}
+}*/
 
 /* Main Loop */
 void loop() {
   updateStatusIndicator();
+  
   #ifdef HALL_SENSOR
-    readHallSensor();
+   int hallValue = readHallSensor();
   #endif
+
+  if(millis()%2000 == 0){
+    Serial.print("Heartbeat. Hall value: ");
+    Serial.print(hallValue);
+    Serial.print(" (");
+    Serial.print(hallSensorTriggered,DEC);
+    Serial.println(")");
+    
+  }
 
   if(cupDispenseReady){
     dispenseCup();
     cupDispenseReady = false;
   }
+
+  if(i2c_data_ready){
+    processI2C();
+    i2c_data_ready = false;
+  }
+
+  if(i2c_data_request){
+    sendI2CReply();
+    i2c_data_request = false;
+  }
+
+  processMovement();
 }

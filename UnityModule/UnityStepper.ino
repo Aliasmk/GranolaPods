@@ -34,25 +34,16 @@ long int RPMtoStepDelay(double RPM){
 void stepperStart(int stepperRPM){
   stepperEnable();
   targetSpeed = stepperRPM;
- // currentSpeed = stepperRPM;
 }
 
 //Decel stepper to stop
 void stepperStop(){
-  targetSpeed = 0;
-  //currentSpeed = 0;  
+  targetSpeed = 0; 
 }
 
 //Perform one step of the stepper. Also accel or decel to target speed.
 void stepperStep(){  
   lastStepAt = micros();   //Update the previous step time
-  /*
-  //Accel and Decel to target
-  if(currentSpeed < targetSpeed)
-    currentSpeed++;
-  else if(currentSpeed > targetSpeed)
-    currentSpeed--;
-*/
 
  double Kp = 0.2;
  currentSpeed = round(currentSpeed + Kp*(targetSpeed-currentSpeed));
@@ -74,7 +65,7 @@ void stepperEnable(){
   if(!stepperStatus){
     //Wake up the stepper driver before stepping
     digitalWrite(STEPPER_SLEEP,HIGH);
-    delay(1); //delay 1ms to allow charge pump to stabilize
+    //delay(1); //delay 1ms to allow charge pump to stabilize
     stepperStatus = true;
   }
 }
@@ -84,5 +75,5 @@ void stepperDisable(){
   currentSpeed = 0;
   digitalWrite(STEPPER_SLEEP,LOW);
   stepperStatus = false;
-  delay(1);
+  //delay(1);
 }

@@ -6,11 +6,12 @@ void hitLimitSwitch(){
 }
 
 #ifdef HALL_SENSOR
-void readHallSensor(){
+int readHallSensor(){
   int reading = analogRead(HALL_SENSOR);
   if(reading < 250 || reading > 750){
-    hallSensorTriggered == true;
+    hallSensorTriggered = true;
     state = STATE_HALLTRIGGER;
-  } 
+  }
+  return reading;
 }
 #endif
